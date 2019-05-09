@@ -1,0 +1,1227 @@
+.class public Lcom/tencent/ttpic/filter/FaceCopyFilter;
+.super Lcom/tencent/ttpic/filter/VideoFilterBase;
+.source "SourceFile"
+
+
+# static fields
+.field private static final FRAGMENT_SHADER:Ljava/lang/String;
+
+.field private static final VERTEX_SHADER:Ljava/lang/String;
+
+
+# instance fields
+.field private faceVertices:[F
+
+.field private grayImageHeight:I
+
+.field private grayImageWidth:I
+
+.field private grayVertices:[F
+
+.field private mFaceLists:Ljava/util/List;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "Ljava/util/List",
+            "<",
+            "Ljava/util/List",
+            "<",
+            "Landroid/graphics/PointF;",
+            ">;>;"
+        }
+    .end annotation
+.end field
+
+.field private mFaceTex:I
+
+.field private texVertices:[F
+
+
+# direct methods
+.method static constructor <clinit>()V
+    .registers 2
+
+    .prologue
+    .line 29
+    invoke-static {}, Lcom/tencent/ttpic/util/VideoGlobalContext;->getContext()Landroid/content/Context;
+
+    move-result-object v0
+
+    const-string/jumbo v1, "camera/camera_video/shader/FaceOffVertexShader.dat"
+
+    invoke-static {v0, v1}, Lcom/tencent/ttpic/util/VideoFileUtil;->loadAssetsString(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v0
+
+    sput-object v0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->VERTEX_SHADER:Ljava/lang/String;
+
+    .line 30
+    invoke-static {}, Lcom/tencent/ttpic/util/VideoGlobalContext;->getContext()Landroid/content/Context;
+
+    move-result-object v0
+
+    const-string/jumbo v1, "camera/camera_video/shader/FaceOffFragmentShader.dat"
+
+    invoke-static {v0, v1}, Lcom/tencent/ttpic/util/VideoFileUtil;->loadAssetsString(Landroid/content/Context;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v0
+
+    sput-object v0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->FRAGMENT_SHADER:Ljava/lang/String;
+
+    return-void
+.end method
+
+.method public constructor <init>()V
+    .registers 3
+
+    .prologue
+    const/16 v1, 0x114
+
+    .line 42
+    sget-object v0, Lcom/tencent/ttpic/shader/ShaderCreateFactory$PROGRAM_TYPE;->FACEOFF:Lcom/tencent/ttpic/shader/ShaderCreateFactory$PROGRAM_TYPE;
+
+    invoke-direct {p0, v0}, Lcom/tencent/ttpic/filter/VideoFilterBase;-><init>(Lcom/tencent/ttpic/shader/ShaderCreateFactory$PROGRAM_TYPE;)V
+
+    .line 36
+    new-array v0, v1, [F
+
+    iput-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->faceVertices:[F
+
+    .line 37
+    new-array v0, v1, [F
+
+    iput-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->texVertices:[F
+
+    .line 38
+    new-array v0, v1, [F
+
+    iput-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->grayVertices:[F
+
+    .line 43
+    invoke-virtual {p0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->initParams()V
+
+    .line 44
+    new-instance v0, Ljava/util/ArrayList;
+
+    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
+
+    iput-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceLists:Ljava/util/List;
+
+    .line 45
+    const/4 v0, -0x1
+
+    iput v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceTex:I
+
+    .line 46
+    return-void
+.end method
+
+
+# virtual methods
+.method distanceFrom(Landroid/graphics/PointF;Landroid/graphics/PointF;)F
+    .registers 6
+
+    .prologue
+    .line 128
+    iget v0, p2, Landroid/graphics/PointF;->x:F
+
+    iget v1, p1, Landroid/graphics/PointF;->x:F
+
+    sub-float/2addr v0, v1
+
+    .line 129
+    iget v1, p2, Landroid/graphics/PointF;->y:F
+
+    iget v2, p1, Landroid/graphics/PointF;->y:F
+
+    sub-float/2addr v1, v2
+
+    .line 130
+    mul-float/2addr v0, v0
+
+    mul-float/2addr v1, v1
+
+    add-float/2addr v0, v1
+
+    float-to-double v0, v0
+
+    invoke-static {v0, v1}, Ljava/lang/Math;->sqrt(D)D
+
+    move-result-wide v0
+
+    double-to-float v0, v0
+
+    return v0
+.end method
+
+.method faceSwapFacePoint(Ljava/util/List;)Ljava/util/List;
+    .registers 16
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/List",
+            "<",
+            "Landroid/graphics/PointF;",
+            ">;)",
+            "Ljava/util/List",
+            "<",
+            "Landroid/graphics/PointF;",
+            ">;"
+        }
+    .end annotation
+
+    .prologue
+    .line 134
+    invoke-interface {p1}, Ljava/util/List;->size()I
+
+    move-result v0
+
+    const/16 v1, 0x61
+
+    if-eq v0, v1, :cond_a
+
+    .line 135
+    const/4 v0, 0x0
+
+    .line 200
+    :goto_9
+    return-object v0
+
+    .line 138
+    :cond_a
+    const/16 v0, 0x9
+
+    invoke-interface {p1, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v1, v0, Landroid/graphics/PointF;->x:F
+
+    const/16 v0, 0x54
+
+    invoke-interface {p1, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v0, v0, Landroid/graphics/PointF;->x:F
+
+    sub-float v2, v1, v0
+
+    .line 140
+    const/16 v0, 0x9
+
+    invoke-interface {p1, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v0, v0, Landroid/graphics/PointF;->y:F
+
+    neg-float v1, v0
+
+    const/16 v0, 0x54
+
+    invoke-interface {p1, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v0, v0, Landroid/graphics/PointF;->y:F
+
+    add-float v3, v1, v0
+
+    .line 142
+    const/16 v0, 0x29
+
+    invoke-interface {p1, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    const/16 v1, 0x33
+
+    invoke-interface {p1, v1}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Landroid/graphics/PointF;
+
+    invoke-static {v0, v1}, Lcom/tencent/ttpic/util/AlgoUtils;->middlePoint(Landroid/graphics/PointF;Landroid/graphics/PointF;)Landroid/graphics/PointF;
+
+    move-result-object v4
+
+    .line 143
+    float-to-double v0, v2
+
+    float-to-double v2, v3
+
+    invoke-static {v0, v1, v2, v3}, Ljava/lang/Math;->atan2(DD)D
+
+    move-result-wide v0
+
+    const-wide v2, 0x400921fb54442d18L    # Math.PI
+
+    add-double/2addr v2, v0
+
+    .line 144
+    new-instance v5, Landroid/graphics/Matrix;
+
+    invoke-direct {v5}, Landroid/graphics/Matrix;-><init>()V
+
+    .line 145
+    invoke-virtual {v5}, Landroid/graphics/Matrix;->reset()V
+
+    .line 146
+    iget v0, v4, Landroid/graphics/PointF;->x:F
+
+    neg-float v0, v0
+
+    iget v1, v4, Landroid/graphics/PointF;->y:F
+
+    neg-float v1, v1
+
+    invoke-virtual {v5, v0, v1}, Landroid/graphics/Matrix;->postTranslate(FF)Z
+
+    .line 147
+    neg-double v0, v2
+
+    invoke-static {v0, v1}, Ljava/lang/Math;->toDegrees(D)D
+
+    move-result-wide v0
+
+    double-to-float v0, v0
+
+    invoke-virtual {v5, v0}, Landroid/graphics/Matrix;->postRotate(F)Z
+
+    .line 148
+    iget v0, v4, Landroid/graphics/PointF;->x:F
+
+    iget v1, v4, Landroid/graphics/PointF;->y:F
+
+    invoke-virtual {v5, v0, v1}, Landroid/graphics/Matrix;->postTranslate(FF)Z
+
+    .line 150
+    invoke-static {p1, v5}, Lcom/tencent/ttpic/util/AlgoUtils;->mapPoints(Ljava/util/List;Landroid/graphics/Matrix;)Ljava/util/List;
+
+    move-result-object v6
+
+    .line 152
+    new-instance v7, Ljava/util/ArrayList;
+
+    invoke-direct {v7}, Ljava/util/ArrayList;-><init>()V
+
+    .line 153
+    const/4 v0, 0x0
+
+    :goto_82
+    const/16 v1, 0x13
+
+    if-ge v0, v1, :cond_90
+
+    .line 154
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v1
+
+    invoke-interface {v7, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 153
+    add-int/lit8 v0, v0, 0x1
+
+    goto :goto_82
+
+    .line 156
+    :cond_90
+    const/16 v0, 0x5a
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 157
+    const/16 v0, 0x5b
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 159
+    const/16 v0, 0x5c
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 160
+    const/16 v0, 0x5d
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 161
+    const/16 v0, 0x5e
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 162
+    const/16 v0, 0x5f
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 163
+    const/16 v0, 0x60
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 165
+    const/16 v0, 0x38
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    const/16 v1, 0x3e
+
+    invoke-interface {v6, v1}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Landroid/graphics/PointF;
+
+    invoke-virtual {p0, v0, v1}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->midBetween(Landroid/graphics/PointF;Landroid/graphics/PointF;)Landroid/graphics/PointF;
+
+    move-result-object v8
+
+    .line 169
+    new-instance v1, Landroid/graphics/PointF;
+
+    invoke-direct {v1}, Landroid/graphics/PointF;-><init>()V
+
+    .line 173
+    const/16 v0, 0x9
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    invoke-virtual {p0, v0, v8}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->distanceFrom(Landroid/graphics/PointF;Landroid/graphics/PointF;)F
+
+    move-result v9
+
+    .line 174
+    const/16 v0, 0x9
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v0, v0, Landroid/graphics/PointF;->x:F
+
+    const/high16 v10, 0x40000000    # 2.0f
+
+    mul-float/2addr v10, v9
+
+    const/high16 v11, 0x41000000    # 8.0f
+
+    div-float/2addr v10, v11
+
+    const-wide/16 v12, 0x0
+
+    invoke-static {v12, v13}, Ljava/lang/Math;->sin(D)D
+
+    move-result-wide v12
+
+    double-to-float v11, v12
+
+    mul-float/2addr v10, v11
+
+    add-float/2addr v0, v10
+
+    iput v0, v1, Landroid/graphics/PointF;->x:F
+
+    .line 175
+    const/16 v0, 0x9
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v0, v0, Landroid/graphics/PointF;->y:F
+
+    const/high16 v10, 0x40000000    # 2.0f
+
+    mul-float/2addr v10, v9
+
+    const/high16 v11, 0x41000000    # 8.0f
+
+    div-float/2addr v10, v11
+
+    const-wide/16 v12, 0x0
+
+    invoke-static {v12, v13}, Ljava/lang/Math;->cos(D)D
+
+    move-result-wide v12
+
+    double-to-float v11, v12
+
+    mul-float/2addr v10, v11
+
+    sub-float/2addr v0, v10
+
+    iput v0, v1, Landroid/graphics/PointF;->y:F
+
+    .line 176
+    invoke-interface {v7, v1}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 178
+    const/4 v0, 0x1
+
+    move v1, v0
+
+    :goto_12f
+    const/4 v0, 0x6
+
+    if-ge v1, v0, :cond_176
+
+    .line 179
+    new-instance v10, Landroid/graphics/PointF;
+
+    invoke-direct {v10}, Landroid/graphics/PointF;-><init>()V
+
+    .line 180
+    const/16 v0, 0x9
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v0, v0, Landroid/graphics/PointF;->x:F
+
+    add-int/lit8 v11, v1, 0x2
+
+    int-to-float v11, v11
+
+    mul-float/2addr v11, v9
+
+    const/high16 v12, 0x41000000    # 8.0f
+
+    div-float/2addr v11, v12
+
+    const-wide/16 v12, 0x0
+
+    invoke-static {v12, v13}, Ljava/lang/Math;->sin(D)D
+
+    move-result-wide v12
+
+    double-to-float v12, v12
+
+    mul-float/2addr v11, v12
+
+    add-float/2addr v0, v11
+
+    iput v0, v10, Landroid/graphics/PointF;->x:F
+
+    .line 181
+    const/16 v0, 0x9
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    iget v0, v0, Landroid/graphics/PointF;->y:F
+
+    add-int/lit8 v11, v1, 0x2
+
+    int-to-float v11, v11
+
+    mul-float/2addr v11, v9
+
+    const/high16 v12, 0x41000000    # 8.0f
+
+    div-float/2addr v11, v12
+
+    const-wide/16 v12, 0x0
+
+    invoke-static {v12, v13}, Ljava/lang/Math;->cos(D)D
+
+    move-result-wide v12
+
+    double-to-float v12, v12
+
+    mul-float/2addr v11, v12
+
+    sub-float/2addr v0, v11
+
+    iput v0, v10, Landroid/graphics/PointF;->y:F
+
+    .line 182
+    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 178
+    add-int/lit8 v0, v1, 0x1
+
+    move v1, v0
+
+    goto :goto_12f
+
+    .line 184
+    :cond_176
+    invoke-interface {v7, v8}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 186
+    const/16 v0, 0x53
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 187
+    const/16 v0, 0x54
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 189
+    const/16 v0, 0x59
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/graphics/PointF;
+
+    const/16 v1, 0x54
+
+    invoke-interface {v6, v1}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Landroid/graphics/PointF;
+
+    invoke-virtual {p0, v0, v1}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->midBetween(Landroid/graphics/PointF;Landroid/graphics/PointF;)Landroid/graphics/PointF;
+
+    move-result-object v0
+
+    .line 190
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 192
+    const/16 v0, 0x59
+
+    invoke-interface {v6, v0}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    invoke-interface {v7, v0}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 194
+    invoke-virtual {v5}, Landroid/graphics/Matrix;->reset()V
+
+    .line 195
+    iget v0, v4, Landroid/graphics/PointF;->x:F
+
+    neg-float v0, v0
+
+    iget v1, v4, Landroid/graphics/PointF;->y:F
+
+    neg-float v1, v1
+
+    invoke-virtual {v5, v0, v1}, Landroid/graphics/Matrix;->postTranslate(FF)Z
+
+    .line 196
+    invoke-static {v2, v3}, Ljava/lang/Math;->toDegrees(D)D
+
+    move-result-wide v0
+
+    double-to-float v0, v0
+
+    invoke-virtual {v5, v0}, Landroid/graphics/Matrix;->postRotate(F)Z
+
+    .line 197
+    iget v0, v4, Landroid/graphics/PointF;->x:F
+
+    iget v1, v4, Landroid/graphics/PointF;->y:F
+
+    invoke-virtual {v5, v0, v1}, Landroid/graphics/Matrix;->postTranslate(FF)Z
+
+    .line 198
+    invoke-static {v7, v5}, Lcom/tencent/ttpic/util/AlgoUtils;->mapPoints(Ljava/util/List;Landroid/graphics/Matrix;)Ljava/util/List;
+
+    move-result-object v0
+
+    goto/16 :goto_9
+.end method
+
+.method public initAttribParams()V
+    .registers 5
+
+    .prologue
+    .line 86
+    invoke-super {p0}, Lcom/tencent/ttpic/filter/VideoFilterBase;->initAttribParams()V
+
+    .line 87
+    sget-object v0, Lcom/tencent/ttpic/util/SwitchFaceUtil$FEATURE_TYPE;->ALL_GRAY:Lcom/tencent/ttpic/util/SwitchFaceUtil$FEATURE_TYPE;
+
+    invoke-static {v0}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->getGrayCoords(Lcom/tencent/ttpic/util/SwitchFaceUtil$FEATURE_TYPE;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 88
+    invoke-static {v0}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->getFullCoords(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 89
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->faceSwapFacePoint(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 90
+    iget v1, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->grayImageWidth:I
+
+    iget v2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->grayImageHeight:I
+
+    iget-object v3, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->grayVertices:[F
+
+    invoke-static {v0, v1, v2, v3}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->initMaterialFaceTexCoords(Ljava/util/List;II[F)[F
+
+    move-result-object v0
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setGrayCords([F)Z
+
+    .line 91
+    sget-object v0, Lcom/tencent/ttpic/util/VideoFilterUtil$DRAW_MODE;->TRIANGLES:Lcom/tencent/ttpic/util/VideoFilterUtil$DRAW_MODE;
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setDrawMode(Lcom/tencent/ttpic/util/VideoFilterUtil$DRAW_MODE;)V
+
+    .line 92
+    const/16 v0, 0x8a
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setCoordNum(I)Z
+
+    .line 93
+    return-void
+.end method
+
+.method public initParams()V
+    .registers 8
+
+    .prologue
+    const/4 v6, 0x1
+
+    const/4 v5, 0x0
+
+    .line 56
+    sget-object v0, Lcom/tencent/ttpic/util/SwitchFaceUtil$FEATURE_TYPE;->ALL_GRAY:Lcom/tencent/ttpic/util/SwitchFaceUtil$FEATURE_TYPE;
+
+    invoke-static {v0}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->getGrayBitmap(Lcom/tencent/ttpic/util/SwitchFaceUtil$FEATURE_TYPE;)Landroid/graphics/Bitmap;
+
+    move-result-object v0
+
+    .line 58
+    invoke-static {v0}, Lcom/tencent/ttpic/util/VideoBitmapUtil;->isLegal(Landroid/graphics/Bitmap;)Z
+
+    move-result v1
+
+    if-nez v1, :cond_f
+
+    .line 71
+    :goto_e
+    return-void
+
+    .line 61
+    :cond_f
+    invoke-virtual {v0}, Landroid/graphics/Bitmap;->getWidth()I
+
+    move-result v1
+
+    iput v1, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->grayImageWidth:I
+
+    .line 62
+    invoke-virtual {v0}, Landroid/graphics/Bitmap;->getHeight()I
+
+    move-result v1
+
+    iput v1, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->grayImageHeight:I
+
+    .line 63
+    new-instance v1, Lcom/tencent/filter/m$n;
+
+    const-string/jumbo v2, "inputImageTexture2"
+
+    iget v3, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceTex:I
+
+    const v4, 0x84c2
+
+    invoke-direct {v1, v2, v3, v4}, Lcom/tencent/filter/m$n;-><init>(Ljava/lang/String;II)V
+
+    invoke-virtual {p0, v1}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 64
+    new-instance v1, Lcom/tencent/filter/m$k;
+
+    const-string/jumbo v2, "inputImageTexture3"
+
+    const v3, 0x84c3
+
+    invoke-direct {v1, v2, v0, v3, v6}, Lcom/tencent/filter/m$k;-><init>(Ljava/lang/String;Landroid/graphics/Bitmap;IZ)V
+
+    invoke-virtual {p0, v1}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 65
+    new-instance v0, Lcom/tencent/filter/m$i;
+
+    const-string/jumbo v1, "enableFaceOff"
+
+    invoke-direct {v0, v1, v6}, Lcom/tencent/filter/m$i;-><init>(Ljava/lang/String;I)V
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 66
+    new-instance v0, Lcom/tencent/filter/m$f;
+
+    const-string/jumbo v1, "alpha"
+
+    const/high16 v2, 0x3f800000    # 1.0f
+
+    invoke-direct {v0, v1, v2}, Lcom/tencent/filter/m$f;-><init>(Ljava/lang/String;F)V
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 67
+    new-instance v0, Lcom/tencent/filter/m$b;
+
+    const-string/jumbo v1, "canvasSize"
+
+    invoke-direct {v0, v1, v5, v5}, Lcom/tencent/filter/m$b;-><init>(Ljava/lang/String;FF)V
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 68
+    new-instance v0, Lcom/tencent/filter/m$f;
+
+    const-string/jumbo v1, "positionRotate"
+
+    invoke-direct {v0, v1, v5}, Lcom/tencent/filter/m$f;-><init>(Ljava/lang/String;F)V
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 69
+    new-instance v0, Lcom/tencent/filter/m$i;
+
+    const-string/jumbo v1, "enableAlphaFromGray"
+
+    invoke-direct {v0, v1, v6}, Lcom/tencent/filter/m$i;-><init>(Ljava/lang/String;I)V
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    goto :goto_e
+.end method
+
+.method midBetween(Landroid/graphics/PointF;Landroid/graphics/PointF;)Landroid/graphics/PointF;
+    .registers 8
+
+    .prologue
+    const/high16 v4, 0x40000000    # 2.0f
+
+    .line 124
+    new-instance v0, Landroid/graphics/PointF;
+
+    iget v1, p1, Landroid/graphics/PointF;->x:F
+
+    iget v2, p2, Landroid/graphics/PointF;->x:F
+
+    add-float/2addr v1, v2
+
+    div-float/2addr v1, v4
+
+    iget v2, p1, Landroid/graphics/PointF;->y:F
+
+    iget v3, p2, Landroid/graphics/PointF;->y:F
+
+    add-float/2addr v2, v3
+
+    div-float/2addr v2, v4
+
+    invoke-direct {v0, v1, v2}, Landroid/graphics/PointF;-><init>(FF)V
+
+    return-object v0
+.end method
+
+.method public renderProcess(Ljava/util/Set;)V
+    .registers 10
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/Set",
+            "<",
+            "Ljava/lang/Integer;",
+            ">;)V"
+        }
+    .end annotation
+
+    .prologue
+    .line 96
+    sget-object v0, Lcom/tencent/ttpic/util/VideoMaterialUtil$TRIGGER_TYPE;->FACE_DETECT:Lcom/tencent/ttpic/util/VideoMaterialUtil$TRIGGER_TYPE;
+
+    iget v0, v0, Lcom/tencent/ttpic/util/VideoMaterialUtil$TRIGGER_TYPE;->value:I
+
+    invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v0
+
+    invoke-interface {p1, v0}, Ljava/util/Set;->contains(Ljava/lang/Object;)Z
+
+    move-result v0
+
+    if-eqz v0, :cond_17
+
+    iget-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceLists:Ljava/util/List;
+
+    invoke-interface {v0}, Ljava/util/List;->size()I
+
+    move-result v0
+
+    const/4 v1, 0x2
+
+    if-ge v0, v1, :cond_2d
+
+    .line 97
+    :cond_17
+    sget-object v0, Lcom/tencent/ttpic/util/VideoFilterUtil;->EMPTY_POSITIONS:[F
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setPositions([F)Z
+
+    .line 98
+    const/4 v0, 0x4
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setCoordNum(I)Z
+
+    .line 99
+    invoke-virtual {p0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->OnDrawFrameGLSL()V
+
+    .line 100
+    iget v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceTex:I
+
+    iget v1, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->width:I
+
+    iget v2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->height:I
+
+    invoke-virtual {p0, v0, v1, v2}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->renderTexture(III)Z
+
+    .line 121
+    :cond_2c
+    return-void
+
+    .line 103
+    :cond_2d
+    iget-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceLists:Ljava/util/List;
+
+    const/4 v1, 0x0
+
+    invoke-interface {v0, v1}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Ljava/util/List;
+
+    invoke-static {v0}, Lcom/tencent/ttpic/util/VideoMaterialUtil;->copyList(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 104
+    invoke-static {v0}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->getFullCoords(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 105
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->faceSwapFacePoint(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 106
+    iget v1, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->height:I
+
+    int-to-double v2, v1
+
+    iget-wide v4, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceDetScale:D
+
+    mul-double/2addr v2, v4
+
+    double-to-int v1, v2
+
+    invoke-static {v0, v1}, Lcom/tencent/ttpic/util/VideoMaterialUtil;->flipYPoints(Ljava/util/List;I)V
+
+    .line 107
+    iget v1, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->width:I
+
+    int-to-double v2, v1
+
+    iget-wide v4, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceDetScale:D
+
+    mul-double/2addr v2, v4
+
+    double-to-int v1, v2
+
+    iget v2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->height:I
+
+    int-to-double v2, v2
+
+    iget-wide v4, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceDetScale:D
+
+    mul-double/2addr v2, v4
+
+    double-to-int v2, v2
+
+    iget-object v3, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->texVertices:[F
+
+    invoke-static {v0, v1, v2, v3}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->initMaterialFaceTexCoords(Ljava/util/List;II[F)[F
+
+    move-result-object v0
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setTexCords([F)Z
+
+    .line 109
+    const/4 v0, 0x1
+
+    move v1, v0
+
+    :goto_65
+    iget-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceLists:Ljava/util/List;
+
+    invoke-interface {v0}, Ljava/util/List;->size()I
+
+    move-result v0
+
+    if-ge v1, v0, :cond_2c
+
+    .line 110
+    iget-object v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceLists:Ljava/util/List;
+
+    invoke-interface {v0, v1}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Ljava/util/List;
+
+    invoke-static {v0}, Lcom/tencent/ttpic/util/VideoMaterialUtil;->copyList(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 111
+    invoke-static {v0}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->getFullCoords(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 112
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->faceSwapFacePoint(Ljava/util/List;)Ljava/util/List;
+
+    move-result-object v0
+
+    .line 113
+    iget v2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->height:I
+
+    int-to-double v2, v2
+
+    iget-wide v4, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceDetScale:D
+
+    mul-double/2addr v2, v4
+
+    double-to-int v2, v2
+
+    invoke-static {v0, v2}, Lcom/tencent/ttpic/util/VideoMaterialUtil;->flipYPoints(Ljava/util/List;I)V
+
+    .line 114
+    iget v2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->width:I
+
+    int-to-double v2, v2
+
+    iget-wide v4, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceDetScale:D
+
+    mul-double/2addr v2, v4
+
+    double-to-int v2, v2
+
+    iget v3, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->height:I
+
+    int-to-double v4, v3
+
+    iget-wide v6, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceDetScale:D
+
+    mul-double/2addr v4, v6
+
+    double-to-int v3, v4
+
+    iget-object v4, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->faceVertices:[F
+
+    invoke-static {v0, v2, v3, v4}, Lcom/tencent/ttpic/util/SwitchFaceUtil;->initFacePositions(Ljava/util/List;II[F)[F
+
+    move-result-object v0
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setPositions([F)Z
+
+    .line 115
+    const/16 v0, 0x8a
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->setCoordNum(I)Z
+
+    .line 116
+    invoke-virtual {p0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->OnDrawFrameGLSL()V
+
+    .line 117
+    iget v0, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceTex:I
+
+    iget v2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->width:I
+
+    iget v3, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->height:I
+
+    invoke-virtual {p0, v0, v2, v3}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->renderTexture(III)Z
+
+    .line 109
+    add-int/lit8 v0, v1, 0x1
+
+    move v1, v0
+
+    goto :goto_65
+.end method
+
+.method public setFaceParams(Ljava/util/List;I)V
+    .registers 7
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/List",
+            "<",
+            "Ljava/util/List",
+            "<",
+            "Landroid/graphics/PointF;",
+            ">;>;I)V"
+        }
+    .end annotation
+
+    .prologue
+    .line 49
+    iput-object p1, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceLists:Ljava/util/List;
+
+    .line 50
+    iput p2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceTex:I
+
+    .line 51
+    new-instance v0, Lcom/tencent/filter/m$n;
+
+    const-string/jumbo v1, "inputImageTexture2"
+
+    iget v2, p0, Lcom/tencent/ttpic/filter/FaceCopyFilter;->mFaceTex:I
+
+    const v3, 0x84c2
+
+    invoke-direct {v0, v1, v2, v3}, Lcom/tencent/filter/m$n;-><init>(Ljava/lang/String;II)V
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 52
+    return-void
+.end method
+
+.method public updatePreview(Ljava/util/List;[FLjava/util/Map;Ljava/util/List;Ljava/util/Map;Ljava/util/Set;FJ)V
+    .registers 10
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/List",
+            "<",
+            "Landroid/graphics/PointF;",
+            ">;[F",
+            "Ljava/util/Map",
+            "<",
+            "Ljava/lang/Integer;",
+            "Lcom/tencent/ttpic/model/FaceActionCounter;",
+            ">;",
+            "Ljava/util/List",
+            "<",
+            "Landroid/graphics/PointF;",
+            ">;",
+            "Ljava/util/Map",
+            "<",
+            "Ljava/lang/Integer;",
+            "Lcom/tencent/ttpic/model/HandActionCounter;",
+            ">;",
+            "Ljava/util/Set",
+            "<",
+            "Ljava/lang/Integer;",
+            ">;FJ)V"
+        }
+    .end annotation
+
+    .prologue
+    .line 76
+    return-void
+.end method
+
+.method public updateVideoSize(IID)V
+    .registers 10
+
+    .prologue
+    .line 80
+    invoke-super {p0, p1, p2, p3, p4}, Lcom/tencent/ttpic/filter/VideoFilterBase;->updateVideoSize(IID)V
+
+    .line 81
+    new-instance v0, Lcom/tencent/filter/m$b;
+
+    const-string/jumbo v1, "canvasSize"
+
+    int-to-float v2, p1
+
+    int-to-float v3, p2
+
+    invoke-direct {v0, v1, v2, v3}, Lcom/tencent/filter/m$b;-><init>(Ljava/lang/String;FF)V
+
+    invoke-virtual {p0, v0}, Lcom/tencent/ttpic/filter/FaceCopyFilter;->addParam(Lcom/tencent/filter/m;)V
+
+    .line 82
+    return-void
+.end method

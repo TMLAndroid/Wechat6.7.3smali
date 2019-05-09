@@ -1,0 +1,107 @@
+.class final Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Landroid/os/IBinder$DeathRecipient;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;->a(Landroid/os/IBinder;Ljava/lang/String;)V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x0
+    name = null
+.end annotation
+
+
+# instance fields
+.field final synthetic dGw:Ljava/lang/String;
+
+.field final synthetic gdQ:Landroid/os/IBinder;
+
+.field final synthetic rdn:Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;
+
+
+# direct methods
+.method constructor <init>(Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;Landroid/os/IBinder;Ljava/lang/String;)V
+    .registers 4
+
+    .prologue
+    .line 76
+    iput-object p1, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->rdn:Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;
+
+    iput-object p2, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->gdQ:Landroid/os/IBinder;
+
+    iput-object p3, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->dGw:Ljava/lang/String;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public final binderDied()V
+    .registers 6
+
+    .prologue
+    const/4 v4, 0x0
+
+    .line 79
+    iget-object v1, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->gdQ:Landroid/os/IBinder;
+
+    iget-object v0, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->rdn:Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;
+
+    iget-object v0, v0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;->rdm:Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService;
+
+    invoke-static {v0}, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService;->b(Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService;)Ljava/util/HashMap;
+
+    move-result-object v0
+
+    iget-object v2, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->dGw:Ljava/lang/String;
+
+    invoke-virtual {v0, v2}, Ljava/util/HashMap;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Landroid/os/IBinder$DeathRecipient;
+
+    invoke-interface {v1, v0, v4}, Landroid/os/IBinder;->unlinkToDeath(Landroid/os/IBinder$DeathRecipient;I)Z
+
+    .line 80
+    iget-object v0, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->rdn:Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;
+
+    iget-object v0, v0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2;->rdm:Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService;
+
+    invoke-static {v0}, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService;->b(Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService;)Ljava/util/HashMap;
+
+    move-result-object v0
+
+    iget-object v1, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->dGw:Ljava/lang/String;
+
+    invoke-virtual {v0, v1}, Ljava/util/HashMap;->remove(Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 81
+    invoke-static {}, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService;->ahu()V
+
+    .line 82
+    const-string/jumbo v0, "MicroMsg.LuggageMainProcessService"
+
+    const-string/jumbo v1, "Client Process Died: %s"
+
+    const/4 v2, 0x1
+
+    new-array v2, v2, [Ljava/lang/Object;
+
+    iget-object v3, p0, Lcom/tencent/mm/plugin/webview/luggage/ipc/LuggageMainProcessService$2$1;->dGw:Ljava/lang/String;
+
+    aput-object v3, v2, v4
+
+    invoke-static {v0, v1, v2}, Lcom/tencent/mm/sdk/platformtools/y;->e(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)V
+
+    .line 83
+    return-void
+.end method

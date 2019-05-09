@@ -1,0 +1,67 @@
+.class final Lcom/tencent/mm/ui/chatting/h/e$3$1;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/lang/Runnable;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lcom/tencent/mm/ui/chatting/h/e$3;->eT(II)V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x0
+    name = null
+.end annotation
+
+
+# instance fields
+.field final synthetic vyX:Lcom/tencent/mm/ui/chatting/h/e$3;
+
+
+# direct methods
+.method constructor <init>(Lcom/tencent/mm/ui/chatting/h/e$3;)V
+    .registers 2
+
+    .prologue
+    .line 557
+    iput-object p1, p0, Lcom/tencent/mm/ui/chatting/h/e$3$1;->vyX:Lcom/tencent/mm/ui/chatting/h/e$3;
+
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method
+
+
+# virtual methods
+.method public final run()V
+    .registers 2
+
+    .prologue
+    .line 560
+    iget-object v0, p0, Lcom/tencent/mm/ui/chatting/h/e$3$1;->vyX:Lcom/tencent/mm/ui/chatting/h/e$3;
+
+    iget-object v0, v0, Lcom/tencent/mm/ui/chatting/h/e$3;->vyV:Lcom/tencent/mm/ui/chatting/h/e;
+
+    invoke-static {v0}, Lcom/tencent/mm/ui/chatting/h/e;->c(Lcom/tencent/mm/ui/chatting/h/e;)Lcom/tencent/mm/ui/chatting/d/a$b;
+
+    move-result-object v0
+
+    if-eqz v0, :cond_15
+
+    iget-object v0, p0, Lcom/tencent/mm/ui/chatting/h/e$3$1;->vyX:Lcom/tencent/mm/ui/chatting/h/e$3;
+
+    iget-object v0, v0, Lcom/tencent/mm/ui/chatting/h/e$3;->vyV:Lcom/tencent/mm/ui/chatting/h/e;
+
+    invoke-static {v0}, Lcom/tencent/mm/ui/chatting/h/e;->c(Lcom/tencent/mm/ui/chatting/h/e;)Lcom/tencent/mm/ui/chatting/d/a$b;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Lcom/tencent/mm/ui/chatting/d/a$b;->cFK()V
+
+    .line 561
+    :cond_15
+    return-void
+.end method
